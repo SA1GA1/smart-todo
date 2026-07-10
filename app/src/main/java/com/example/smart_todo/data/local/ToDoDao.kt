@@ -1,6 +1,7 @@
 package com.example.smart_todo.data.local
 
 import androidx.room.Dao
+import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.Query
 import androidx.room.Update
@@ -23,4 +24,8 @@ interface ToDoDao {
     // обновление задачи
     @Update
     suspend fun updateTask(task: ToDoEntity)
+
+    // удаление задачи
+    @Delete
+    suspend fun deleteTask(task: ToDoEntity)
 }

@@ -43,6 +43,8 @@ android {
 dependencies {
 
     implementation(libs.androidx.room.runtime)
+    implementation(libs.koin.core)
+    implementation(libs.koin.android)
     ksp(libs.androidx.room.compiler)
 
     implementation(libs.androidx.core.ktx)
