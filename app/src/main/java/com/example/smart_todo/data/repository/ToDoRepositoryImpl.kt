@@ -15,7 +15,7 @@ class ToDoRepositoryImpl(private val dao: ToDoDao): ToDoRepository {
     }
 
     override fun getTaskById(id: Int): Flow<ToDoTask?> {
-        return dao.getTaskById(id).map {it.toDomain()}
+        return dao.getTaskById(id).map {it?.toDomain()}
     }
 
     override suspend fun insertTask(task: ToDoTask) {
