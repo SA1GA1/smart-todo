@@ -47,6 +47,8 @@ dependencies {
     implementation(libs.koin.android)
     implementation(libs.androidx.navigation.compose)
     implementation(libs.androidx.compose.material.icons.extended)
+    implementation(libs.koin.compose.viewmodel)
+    implementation(libs.androidx.material3)
     ksp(libs.androidx.room.compiler)
 
     implementation(libs.androidx.core.ktx)
