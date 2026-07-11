@@ -1,7 +1,9 @@
 package com.example.smart_todo.domain.model
 
-enum class Priority {
-    LOW, MEDIUM, HIGH
+enum class Priority(val color: Long) {
+    LOW(0xFF00C980),
+    MEDIUM(0xFFFFCA28),
+    HIGH(0xFFE53935)
 }
 
 data class ToDoTask(
