@@ -16,6 +16,7 @@ okhttp = "5.4.0"
 koinCore = "4.2.2"
 koinAndroid = "4.2.2"
 navigationCompose = "2.9.8"
+materialIconsExtended = "1.7.8"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -40,6 +41,7 @@ okhttp = { group = "com.squareup.okhttp3", name = "okhttp", version.ref = "okhtt
 koin-core = { group = "io.insert-koin", name = "koin-core", version.ref = "koinCore" }
 koin-android = { group = "io.insert-koin", name = "koin-android", version.ref = "koinAndroid" }
 androidx-navigation-compose = { group = "androidx.navigation", name = "navigation-compose", version.ref = "navigationCompose" }
+androidx-compose-material-icons-extended = { group = "androidx.compose.material", name = "material-icons-extended", version.ref = "materialIconsExtended" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
