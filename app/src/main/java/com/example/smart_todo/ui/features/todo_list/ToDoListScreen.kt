@@ -51,7 +51,7 @@ fun ToDoListScreen(
 ) {
     val uiState by viewModel.uiStateFlow.collectAsStateWithLifecycle()
 
-    // 1. Экран загрузки
+    // Экран загрузки
     if (uiState.isLoading) {
         Box(
             modifier = Modifier.fillMaxSize(),
@@ -60,7 +60,7 @@ fun ToDoListScreen(
             CircularProgressIndicator(color = MaterialTheme.colorScheme.primary)
         }
     } else {
-        // 1. Основной контент
+        // Основной контент
         LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
