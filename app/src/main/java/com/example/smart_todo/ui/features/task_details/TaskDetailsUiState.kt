@@ -9,6 +9,6 @@ data class TaskDetailsUiState (
     val deadline: Long? = null,
     val isLoading: Boolean = false,
     val isSaved: Boolean = false,
-    val formattedDate: String = "",
-    val formattedTime: String = ""
+    val formattedDate: String = "Выберите дату",
+    val formattedTime: String = "Выберите время"
 )

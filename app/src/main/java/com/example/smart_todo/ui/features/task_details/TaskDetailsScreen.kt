@@ -33,6 +33,9 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -40,8 +43,11 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.smart_todo.domain.model.Priority
 import com.example.smart_todo.ui.features.task_details.components.DateTimePickerButton
+import com.example.smart_todo.ui.features.task_details.components.MyDatePickerDialog
+import com.example.smart_todo.ui.features.task_details.components.MyTimePickerDialog
 import com.example.smart_todo.ui.theme.SmarttodoTheme
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -53,6 +59,9 @@ fun TaskDetailsScreen(
 ) {
     val uiState by viewModel.uiStateFlow.collectAsStateWithLifecycle()
 
+    var showDatePicker by remember { mutableStateOf(false) }
+    var showTimePicker by remember { mutableStateOf(false) }
+
     LaunchedEffect(id) {
         viewModel.loadTask(id)
     }
@@ -60,10 +69,36 @@ fun TaskDetailsScreen(
     TaskDetailsContent(
         uiState = uiState,
         onBackClick = onBackClick,
+        onSaveClick = {
+            viewModel.saveTask(id = id, onSuccess = onBackClick)
+        },
+        onDateClick = { showDatePicker = true },
+        onTimeClick = { showTimePicker = true },
         onTitleChange = viewModel::onTitleChange,
         onDescriptionChange = viewModel::onDescriptionChange,
         onPriorityChange = viewModel::onPriorityChange
     )
+
+    if (showDatePicker) {
+        MyDatePickerDialog(
+            onDateSealed = { millis ->
+                viewModel.onDateChange(millis)
+                showDatePicker = false
+            },
+            onDismiss = { showDatePicker = false }
+        )
+    }
+
+    if (showTimePicker) {
+        MyTimePickerDialog(
+            onTimeSelected = { hour, minute ->
+                viewModel.onTimeChange(hour, minute)
+                showTimePicker = false
+            },
+            onDismiss = { showTimePicker = false }
+        )
+    }
+
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -71,9 +106,12 @@ fun TaskDetailsScreen(
 fun TaskDetailsContent(
     uiState: TaskDetailsUiState,
     onBackClick: () -> Unit,
+    onSaveClick: () -> Unit,
     onTitleChange: (String) -> Unit,
     onDescriptionChange: (String) -> Unit,
-    onPriorityChange: (Priority) -> Unit
+    onPriorityChange: (Priority) -> Unit,
+    onDateClick: () -> Unit,
+    onTimeClick: () -> Unit
 ) {
     Scaffold(
         topBar = {
@@ -90,7 +128,7 @@ fun TaskDetailsContent(
                 },
                 actions = {
                     TextButton(
-                        onClick = { },
+                        onClick = {onSaveClick()},
                         enabled = uiState.title.isNotBlank()
                     ) {
                         Text(
@@ -161,7 +199,7 @@ fun TaskDetailsContent(
                 TextField(
                     value = uiState.description,
                     onValueChange = onDescriptionChange,
-                    placeholder = { Text("Описание, детали, ссылки...") },
+                    placeholder = { Text("Описание, детали ...") },
                     textStyle = MaterialTheme.typography.bodyLarge,
                     colors = TextFieldDefaults.colors(
                         focusedContainerColor = Color.Transparent,
@@ -183,14 +221,14 @@ fun TaskDetailsContent(
                 ) {
                     // Кнопка даты
                     DateTimePickerButton(
-                        text = "Сегодня, 7 июля",
+                        text = uiState.formattedDate,
                         icon = Icons.Default.DateRange,
                         onClick = { /* Вызов DatePickerDialog */ },
                         modifier = Modifier.weight(1f)
                     )
                     // Кнопка времени
                     DateTimePickerButton(
-                        text = "15:00",
+                        text = uiState.formattedTime,
                         icon = Icons.Default.AccessTime,
                         onClick = { /* Вызов TimePickerDialog */ },
                         modifier = Modifier.weight(1f)
@@ -277,7 +315,10 @@ fun TaskDetailsScreenPreview() {
             onBackClick = {},
             onTitleChange = {},
             onDescriptionChange = {},
-            onPriorityChange = {}
+            onPriorityChange = {},
+            onSaveClick = {},
+            onDateClick = {},
+            onTimeClick = {}
         )
     }
 }
