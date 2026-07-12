@@ -43,12 +43,14 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.smart_todo.domain.model.Priority
 import com.example.smart_todo.ui.features.task_details.components.DateTimePickerButton
 import com.example.smart_todo.ui.features.task_details.components.MyDatePickerDialog
 import com.example.smart_todo.ui.features.task_details.components.MyTimePickerDialog
 import com.example.smart_todo.ui.theme.SmarttodoTheme
+import com.example.smart_todo.ui.theme.notSelectHighPriorityColor
+import com.example.smart_todo.ui.theme.notSelectLowPriorityColor
+import com.example.smart_todo.ui.theme.notSelectMediumPriorityColor
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
@@ -223,14 +225,14 @@ fun TaskDetailsContent(
                     DateTimePickerButton(
                         text = uiState.formattedDate,
                         icon = Icons.Default.DateRange,
-                        onClick = { /* Вызов DatePickerDialog */ },
+                        onClick = onDateClick,
                         modifier = Modifier.weight(1f)
                     )
                     // Кнопка времени
                     DateTimePickerButton(
                         text = uiState.formattedTime,
                         icon = Icons.Default.AccessTime,
-                        onClick = { /* Вызов TimePickerDialog */ },
+                        onClick = onTimeClick,
                         modifier = Modifier.weight(1f)
                     )
                 }
@@ -253,9 +255,9 @@ fun TaskDetailsContent(
 
                             val containerColor = if (isSelected) {
                                 when (priorityOption) {
-                                    Priority.LOW -> Color(0xFFE8F5E9)
-                                    Priority.MEDIUM -> Color(0xFFFFF3E0)
-                                    Priority.HIGH -> Color(0xFFFFF0EE)
+                                    Priority.LOW -> notSelectLowPriorityColor
+                                    Priority.MEDIUM -> notSelectMediumPriorityColor
+                                    Priority.HIGH -> notSelectHighPriorityColor
                                 }
                             } else {
                                 Color.Transparent
@@ -263,9 +265,9 @@ fun TaskDetailsContent(
 
                             val contentColor = if (isSelected) {
                                 when (priorityOption) {
-                                    Priority.LOW -> Color(0xFF43A047)
-                                    Priority.MEDIUM -> Color(0xFFFB8C00)
-                                    Priority.HIGH -> Color(0xFFE53935)
+                                    Priority.LOW -> Priority.LOW.color
+                                    Priority.MEDIUM -> Priority.MEDIUM.color
+                                    Priority.HIGH -> Priority.HIGH.color
                                 }
                             } else {
                                 MaterialTheme.colorScheme.onSurface
@@ -280,7 +282,7 @@ fun TaskDetailsContent(
                                 ),
                                 colors = SegmentedButtonDefaults.colors(
                                     activeContainerColor = containerColor,
-                                    activeContentColor = contentColor,
+                                    activeContentColor = contentColor as Color,
                                     inactiveContainerColor = Color.Transparent,
                                     inactiveContentColor = MaterialTheme.colorScheme.onSurface
                                 )
@@ -291,7 +293,7 @@ fun TaskDetailsContent(
                                         Priority.MEDIUM -> "Средний"
                                         Priority.HIGH -> "Высокий"
                                     },
-                                    fontWeight = if (isSelected) FontWeight.SemiBold else FontWeight.Normal
+                                    fontWeight = FontWeight.Normal
                                 )
                             }
                         }
