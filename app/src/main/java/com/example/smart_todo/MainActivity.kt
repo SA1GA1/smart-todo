@@ -107,7 +107,7 @@ class MainActivity : ComponentActivity() {
 
                         composable<AppNavigation.TaskDetails> { backStackEntry ->
                             val args = backStackEntry.toRoute<AppNavigation.TaskDetails>()
-                            TaskDetailsScreen(id = args.id, onBack = { navController.popBackStack()})
+                            TaskDetailsScreen(id = args.id, onBackClick = { navController.popBackStack()})
 
                         }
 

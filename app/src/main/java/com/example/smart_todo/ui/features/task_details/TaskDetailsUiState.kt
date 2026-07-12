@@ -8,5 +8,7 @@ data class TaskDetailsUiState (
     val priority: Priority = Priority.LOW,
     val deadline: Long? = null,
     val isLoading: Boolean = false,
-    val isSaved: Boolean = false
+    val isSaved: Boolean = false,
+    val formattedDate: String = "",
+    val formattedTime: String = ""
 )
