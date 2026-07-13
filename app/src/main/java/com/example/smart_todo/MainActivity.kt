@@ -44,9 +44,8 @@ class MainActivity : ComponentActivity() {
                 val currentDestination = navBackStackEntry?.destination
 
                 // нужен ли bottom bur
-                val shouldShowBottomBar =
-                    currentDestination?.hasRoute<AppNavigation.ToDoList>() == true ||
-                            currentDestination?.hasRoute<AppNavigation.Statistics>() == true
+                val shouldShowBottomBar = currentDestination?.hasRoute<AppNavigation.ToDoList>() == true ||
+                        currentDestination?.hasRoute<AppNavigation.Statistics>() == true
 
                 Scaffold(
                     bottomBar = {
@@ -116,7 +115,13 @@ class MainActivity : ComponentActivity() {
                         }
 
                         composable<AppNavigation.Onboarding> {
-                            OnboardingScreen()
+                            OnboardingScreen(
+                                onFinished = {
+                                    navController.navigate(AppNavigation.ToDoList) {
+                                        popUpTo(AppNavigation.Onboarding) {inclusive = true}
+                                    }
+                                }
+                            )
                         }
                     }
                 }
