@@ -15,7 +15,9 @@ import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavDestination.Companion.hasRoute
 import androidx.navigation.compose.NavHost
@@ -23,6 +25,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
+import com.example.smart_todo.data.local.SettingsManager
 import com.example.smart_todo.ui.features.todo_list.ToDoListScreen
 import com.example.smart_todo.ui.features.todo_stats.StatisticsScreen
 import com.example.smart_todo.ui.features.task_details.TaskDetailsScreen
@@ -30,14 +33,25 @@ import com.example.smart_todo.ui.features.todo_onboarding.OnboardingScreen
 
 import com.example.smart_todo.ui.navigation.AppNavigation
 import com.example.smart_todo.ui.theme.SmarttodoTheme
+import kotlinx.coroutines.launch
+import org.koin.android.ext.android.inject
 
 class MainActivity : ComponentActivity() {
+
+    private val settingsManager: SettingsManager by inject()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
+
+            val isOnboardingCompleted by settingsManager.isOnboardingCompleted.collectAsState(initial = false)
+
             SmarttodoTheme {
+
                 val navController = rememberNavController()
+
+                val scope = rememberCoroutineScope()
 
                 // текущие экраны
                 val navBackStackEntry by navController.currentBackStackEntryAsState()
@@ -94,7 +108,7 @@ class MainActivity : ComponentActivity() {
                 ) { innerPadding ->
                     NavHost(
                         navController = navController,
-                        startDestination = AppNavigation.Onboarding,
+                        startDestination = if (isOnboardingCompleted) AppNavigation.ToDoList else AppNavigation.Onboarding,
                         modifier = Modifier.padding(innerPadding)
                     ) {
 
@@ -117,6 +131,11 @@ class MainActivity : ComponentActivity() {
                         composable<AppNavigation.Onboarding> {
                             OnboardingScreen(
                                 onFinished = {
+
+                                    scope.launch {
+                                        settingsManager.setOnboardingCompleted()
+                                    }
+
                                     navController.navigate(AppNavigation.ToDoList) {
                                         popUpTo(AppNavigation.Onboarding) {inclusive = true}
                                     }
