@@ -94,7 +94,7 @@ class MainActivity : ComponentActivity() {
                 ) { innerPadding ->
                     NavHost(
                         navController = navController,
-                        startDestination = AppNavigation.ToDoList,
+                        startDestination = AppNavigation.Onboarding,
                         modifier = Modifier.padding(innerPadding)
                     ) {
 
