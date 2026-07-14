@@ -13,21 +13,11 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Menu
-import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.ExtendedFloatingActionButton
-import androidx.compose.material3.FilterChip
-import androidx.compose.material3.Icon
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.NavigationBar
-import androidx.compose.material3.NavigationBarItem
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview
@@ -38,11 +28,15 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.example.smart_todo.ui.features.todo_list.components.TaskCard
-import com.example.smart_todo.ui.navigation.AppNavigation
+import com.example.smart_todo.ui.theme.DarkPurple
+import com.example.smart_todo.ui.theme.LightPurple
+import com.example.smart_todo.ui.theme.Purple40
+import com.example.smart_todo.ui.theme.PurpleGrey40
+import com.example.smart_todo.domain.model.Priority
+import com.example.smart_todo.domain.model.ToDoTask
 
 @Composable
 fun ToDoListScreen(
@@ -51,10 +45,24 @@ fun ToDoListScreen(
 ) {
     val uiState by viewModel.uiStateFlow.collectAsStateWithLifecycle()
 
+    ToDoListContent(
+        uiState = uiState,
+        onTaskClick = onTaskClick,
+        onToggleTask = { viewModel.toggleTask(it) }
+    )
+}
+
+@Composable
+fun ToDoListContent(
+    uiState: ToDoListUiState,
+    onTaskClick: (Int) -> Unit,
+    onToggleTask: (ToDoTask) -> Unit,
+    modifier: Modifier = Modifier
+) {
     // Экран загрузки
     if (uiState.isLoading) {
         Box(
-            modifier = Modifier.fillMaxSize(),
+            modifier = modifier.fillMaxSize(),
             contentAlignment = Alignment.Center
         ) {
             CircularProgressIndicator(color = MaterialTheme.colorScheme.primary)
@@ -62,7 +70,7 @@ fun ToDoListScreen(
     } else {
         // Основной контент
         LazyColumn(
-            modifier = Modifier
+            modifier = modifier
                 .fillMaxSize()
                 .padding(horizontal = 16.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp)
@@ -82,7 +90,7 @@ fun ToDoListScreen(
                         )
                         Text(
                             text = uiState.currentStringDate,
-                            style = MaterialTheme.typography.bodyMedium.copy(color = Color(0xFF49454F))
+                            style = MaterialTheme.typography.bodyMedium.copy(color = PurpleGrey40)
                         )
                     }
                 }
@@ -92,13 +100,13 @@ fun ToDoListScreen(
             item {
                 Card(
                     modifier = Modifier.fillMaxWidth(),
-                    colors = CardDefaults.cardColors(containerColor = Color(0xFFEADDFF)),
+                    colors = CardDefaults.cardColors(containerColor = LightPurple),
                     shape = RoundedCornerShape(20.dp)
                 ) {
                     Column(modifier = Modifier.padding(16.dp)) {
                         Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-                            Text("Сегодня выполнено $uiState.completedCount из $uiState.totalCount", fontWeight = FontWeight.SemiBold, color = Color(0xFF21005D))
-                            Text("$uiState.progressPercentage%", fontWeight = FontWeight.SemiBold, color = Color(0xFF21005D))
+                            Text("Сегодня выполнено ${uiState.completedCount} из ${uiState.totalCount}", fontWeight = FontWeight.SemiBold, color = DarkPurple)
+                            Text("${uiState.progressPercentage}%", fontWeight = FontWeight.SemiBold, color = DarkPurple)
                         }
                         Spacer(modifier = Modifier.height(10.dp))
                         LinearProgressIndicator(
@@ -107,8 +115,8 @@ fun ToDoListScreen(
                                 .fillMaxWidth()
                                 .height(8.dp)
                                 .clip(CircleShape),
-                            color = Color(0xFF6750A4),
-                            trackColor = Color(0xFFF3EDF7).copy(alpha = 0.5f)
+                            color = Purple40,
+                            trackColor = LightPurple.copy(alpha = 0.5f)
                         )
                     }
                 }
@@ -117,7 +125,7 @@ fun ToDoListScreen(
             items(uiState.todayTasks) { task ->
                 TaskCard(
                     task = task,
-                    onCheckedChange = { viewModel.toggleTask(task) },
+                    onCheckedChange = { onToggleTask(task) },
                     onTaskClick = onTaskClick
                 )
             }
@@ -126,7 +134,7 @@ fun ToDoListScreen(
             items(uiState.upcomingTasks) { task ->
                 TaskCard(
                     task = task,
-                    onCheckedChange = { viewModel.toggleTask(task) },
+                    onCheckedChange = { onToggleTask(task) },
                     onTaskClick = onTaskClick
                 )
             }
@@ -137,10 +145,49 @@ fun ToDoListScreen(
 
 @Preview(showBackground = true)
 @Composable
-fun ToDoListScreenPreview() {
+fun ToDoListContentPreview() {
+    val sampleTasks = listOf(
+        ToDoTask(
+            id = 1,
+            title = "Сделать зарядку",
+            description = "15 минут утренней гимнастики",
+            priority = Priority.HIGH,
+            createdAt = System.currentTimeMillis(),
+            deadLine = System.currentTimeMillis(),
+            isCompleted = false,
+            category = "Здоровье",
+            reminderTime = null
+        ),
+        ToDoTask(
+            id = 2,
+            title = "Купить продукты",
+            description = "Хлеб, молоко, яйца",
+            priority = Priority.MEDIUM,
+            createdAt = System.currentTimeMillis(),
+            deadLine = System.currentTimeMillis(),
+            isCompleted = true,
+            category = "Покупки",
+            reminderTime = null
+        )
+    )
+
+    val sampleUiState = ToDoListUiState(
+        tasks = sampleTasks,
+        isLoading = false,
+        completedCount = 1,
+        totalCount = 2,
+        progressFraction = 0.5f,
+        progressPercentage = 50,
+        todayTasks = sampleTasks.take(1),
+        upcomingTasks = sampleTasks.drop(1),
+        currentStringDate = "Понедельник, 1 января"
+    )
+
     SmarttodoTheme {
-        ToDoListScreen(
-            onTaskClick = {}
+        ToDoListContent(
+            uiState = sampleUiState,
+            onTaskClick = {},
+            onToggleTask = {}
         )
     }
 }

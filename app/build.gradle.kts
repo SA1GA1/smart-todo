@@ -49,6 +49,7 @@ dependencies {
     implementation(libs.androidx.compose.material.icons.extended)
     implementation(libs.koin.compose.viewmodel)
     implementation(libs.androidx.material3)
+    implementation(libs.androidx.datastore.preferences)
     ksp(libs.androidx.room.compiler)
 
     implementation(libs.androidx.core.ktx)

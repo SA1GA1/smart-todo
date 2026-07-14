@@ -44,9 +44,8 @@ class MainActivity : ComponentActivity() {
                 val currentDestination = navBackStackEntry?.destination
 
                 // нужен ли bottom bur
-                val shouldShowBottomBar =
-                    currentDestination?.hasRoute<AppNavigation.ToDoList>() == true ||
-                            currentDestination?.hasRoute<AppNavigation.Statistics>() == true
+                val shouldShowBottomBar = currentDestination?.hasRoute<AppNavigation.ToDoList>() == true ||
+                        currentDestination?.hasRoute<AppNavigation.Statistics>() == true
 
                 Scaffold(
                     bottomBar = {
@@ -95,7 +94,7 @@ class MainActivity : ComponentActivity() {
                 ) { innerPadding ->
                     NavHost(
                         navController = navController,
-                        startDestination = AppNavigation.ToDoList,
+                        startDestination = AppNavigation.Onboarding,
                         modifier = Modifier.padding(innerPadding)
                     ) {
 
@@ -107,7 +106,7 @@ class MainActivity : ComponentActivity() {
 
                         composable<AppNavigation.TaskDetails> { backStackEntry ->
                             val args = backStackEntry.toRoute<AppNavigation.TaskDetails>()
-                            TaskDetailsScreen(id = args.id, onBack = { navController.popBackStack()})
+                            TaskDetailsScreen(id = args.id, onBackClick = { navController.popBackStack()})
 
                         }
 
@@ -116,7 +115,13 @@ class MainActivity : ComponentActivity() {
                         }
 
                         composable<AppNavigation.Onboarding> {
-                            OnboardingScreen()
+                            OnboardingScreen(
+                                onFinished = {
+                                    navController.navigate(AppNavigation.ToDoList) {
+                                        popUpTo(AppNavigation.Onboarding) {inclusive = true}
+                                    }
+                                }
+                            )
                         }
                     }
                 }
